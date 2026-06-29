@@ -1,0 +1,45 @@
+<h3>{{ editTaskData() ? "Edit Task" : "Add Task" }}</h3>
+
+<form (ngSubmit)="submit()" class="task-form">
+  <input
+    [(ngModel)]="task.title"
+    name="title"
+    placeholder="Task Title"
+    required
+  />
+
+  <textarea
+    [(ngModel)]="task.description"
+    name="description"
+    placeholder="Description"
+  ></textarea>
+
+  <select [(ngModel)]="task.priority" name="priority" required>
+    <option value="" selected>Select Priority</option>
+
+    <option value="low">Low</option>
+    <option value="medium">Medium</option>
+    <option value="high">High</option>
+  </select>
+
+  <input type="date" [(ngModel)]="task.deadline" name="deadline" />
+
+  <input
+    type="number"
+    [(ngModel)]="task.estimated_time"
+    name="estimated_time"
+    placeholder="Estimated time (hours)"
+  />
+
+  <button class="btn btn-primary" type="submit" [disabled]="loading">
+    {{
+      loading
+        ? editTaskData
+          ? "Saving..."
+          : "Adding..."
+        : editTaskData
+          ? "Save Changes"
+          : "Add Task"
+    }}
+  </button>
+</form>

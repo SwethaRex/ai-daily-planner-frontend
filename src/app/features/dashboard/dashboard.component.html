@@ -1,0 +1,140 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h2>Daily AI Planner</h2>
+
+    <button class="btn btn-danger" (click)="logout()">Logout</button>
+  </div>
+
+  <!-- Today's Schedule -->
+  @if (plan().length > 0) {
+    <div class="section-card">
+      <div class="section-header">
+        <h3>📅 Today's Schedule</h3>
+
+        <button class="btn btn-primary" (click)="planDay()">Regenerate</button>
+      </div>
+
+      @for (item of plan(); track item.task) {
+        <div class="schedule-item">
+          <span>{{ item.start }} - {{ item.end }}</span>
+          <strong>{{ item.task }}</strong>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="section-card empty-state">
+      <h3>📅 Today's Schedule</h3>
+
+      <p>No schedule generated yet.</p>
+
+      <button class="btn btn-primary" (click)="planDay()">Plan My Day</button>
+    </div>
+  }
+
+  <!-- Tasks + AI -->
+  <div class="dashboard-grid">
+    <!-- Tasks -->
+    <div class="section-card">
+      <div class="section-header">
+        <h3>📋 Tasks</h3>
+
+        <button
+          class="btn btn-primary"
+          (click)="showTaskForm.set(!showTaskForm())"
+        >
+          {{ showTaskForm() ? "Hide Form" : "+ Add Task" }}
+        </button>
+      </div>
+
+      @if (tasks().length === 0) {
+        <div class="empty-state">No tasks yet.</div>
+      } @else {
+        @for (task of tasks(); track task.id) {
+          <div class="task-card">
+            <div class="task-info">
+              <h4>{{ task.title }}</h4>
+
+              <span class="priority {{ task.priority }}">
+                {{ task.priority }}
+              </span>
+            </div>
+
+            <div class="task-actions">
+              <button class="btn btn-secondary" (click)="editTask(task)">
+                Edit
+              </button>
+
+              <button class="btn btn-danger" (click)="deleteTask(task.id)">
+                Delete
+              </button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- AI Assistant -->
+    <div class="section-card ai-card">
+      <h3>🤖 AI Assistant</h3>
+
+      <div class="chat-history">
+        @for (msg of chatHistory(); track $index) {
+          <div
+            class="chat-message"
+            [class.user-message]="msg.role === 'user'"
+            [class.ai-message]="msg.role === 'assistant'"
+          >
+            <div class="message-header">
+              {{ msg.role === "user" ? "You" : "AI Planner" }}
+            </div>
+
+            <div class="message-content">
+              {{ msg.text }}
+            </div>
+          </div>
+        }
+
+        @if (isSending()) {
+          <div class="chat-message ai-message">
+            <div class="message-header">AI Planner</div>
+
+            <div class="message-content thinking">Thinking...</div>
+          </div>
+        }
+      </div>
+
+      <form class="chat-form" (ngSubmit)="send()">
+        <input
+          [(ngModel)]="message"
+          name="message"
+          autocomplete="off"
+          placeholder="Ask about today's plan..."
+        />
+
+        <button
+          class="btn btn-primary"
+          type="submit"
+          [disabled]="isSending() || !message.trim()"
+        >
+          {{ isSending() ? "Thinking..." : "Send" }}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Task -->
+  @if (showTaskForm()) {
+    <div class="section-card">
+      <h3>
+        {{ selectedTask() ? "Edit Task" : "Add Task" }}
+      </h3>
+
+      <app-task-form
+        [editTaskData]="selectedTask()"
+        (taskCreated)="onTaskSaved()"
+      >
+      </app-task-form>
+    </div>
+  }
+</div>
