@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class ApiService {
   constructor(private http: HttpClient) {}
-  private baseUrl = 'https://ai-daily-planner-backend.onrender.com/';
+  private baseUrl = 'https://ai-daily-planner-backend.onrender.com';
 
   private getHeaders() {
     const token = localStorage.getItem('token');
